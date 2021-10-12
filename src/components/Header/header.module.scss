@@ -1,0 +1,21 @@
+.headerContainer {
+    height: 6.566rem;
+}
+
+
+.headerContent {
+    max-width: 720px;
+    height: 6.566rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    img {
+        width: 238.62px;
+        height: 25.63px;
+    }
+
+}
