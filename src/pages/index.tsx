@@ -2,12 +2,14 @@ import { GetStaticProps } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
 import Prismic from '@prismicio/client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { getPrismicClient, prismicToPostsList } from '../services/prismic';
+import { PostInfo } from '../components/PostInfo';
+import { ExitPreviewButton } from '../components/ExitPreviewButton';
 
 import styles from './home.module.scss';
-import { PostInfo } from '../components/PostInfo';
+
 
 
 interface Post {
@@ -26,10 +28,11 @@ interface PostPagination {
 }
 
 interface HomeProps {
+  preview: boolean;
   postsPagination: PostPagination;
 }
 
-export default function Home({ postsPagination }: HomeProps) {
+export default function Home({ preview, postsPagination }: HomeProps) {
 
   const [posts, setPosts] = useState<Post[]>(postsPagination?.results);
   const [nextPage, setNextPage] = useState<string>(postsPagination?.next_page);
@@ -48,7 +51,7 @@ export default function Home({ postsPagination }: HomeProps) {
         .then((response) => {
           const newPosts = prismicToPostsList(response);
           const newPostList = [...posts, ...newPosts];
-          
+
           setPosts(newPostList);
           setNextPage(response.next_page);
           setLoading(false);
@@ -69,7 +72,7 @@ export default function Home({ postsPagination }: HomeProps) {
               <a>
                 <strong>{post.data.title}</strong>
                 <p>{post.data.subtitle}</p>
-                <PostInfo 
+                <PostInfo
                   publication_date={post.first_publication_date}
                   author={post.data.author}
                 />
@@ -79,21 +82,23 @@ export default function Home({ postsPagination }: HomeProps) {
 
         </div>
         {nextPage !== null && (
-          <button 
-            type="button" 
-            onClick={handleLoadMorePosts} 
+          <button
+            type="button"
+            onClick={handleLoadMorePosts}
             className={loading ? 'disabled' : ''}
           >
             {!loading ? 'Carregar mais posts' : 'Carregando...'}
           </button>
         )}
+        {preview && (
+          <ExitPreviewButton />
+        )}
       </main>
-
     </>
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticProps: GetStaticProps<HomeProps> = async ({ preview = false, previewData }) => {
 
   const prismic = getPrismicClient();
 
@@ -101,7 +106,8 @@ export const getStaticProps: GetStaticProps = async () => {
     Prismic.Predicates.at('document.type', 'post')
   ], {
     fetch: ['post.title', 'post.subtitle', 'post.author', 'post.banner', 'post.content'],
-    pageSize: 1
+    pageSize: 2,
+    ref: previewData?.ref ?? null,
   });
 
   // console.log(JSON.stringify(postsResponse, null, 2));
@@ -113,7 +119,8 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      postsPagination
+      postsPagination,
+      preview
     }
   }
 };

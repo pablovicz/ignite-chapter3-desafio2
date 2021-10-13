@@ -5,12 +5,14 @@ import { useRouter } from 'next/router';
 
 import { getPaths, getPost } from '../../services/prismic';
 import UtterancesComments from '../../components/UtterancesComments';
+import { ExitPreviewButton } from '../../components/ExitPreviewButton';
 import { Navbar } from '../../components/Navbar';
 import { PostInfo } from '../../components/PostInfo';
 import { DateFormatter } from '../../utils/dateFormatter';
 import { TextToReadingDuration } from '../../utils/wordsCounter';
 
 import styles from './post.module.scss';
+
 
 
 interface Post {
@@ -41,9 +43,10 @@ interface Post {
 
 interface PostProps {
   post: Post;
+  preview: boolean;
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post, preview }: PostProps) {
 
 
   const router = useRouter();
@@ -79,8 +82,11 @@ export default function Post({ post }: PostProps) {
           ))}
         </article>
         <footer className={styles.footer}>
-          <Navbar nextPost={post.nextPost} previousPost={post.previousPost}/>
+          <Navbar nextPost={post.nextPost} previousPost={post.previousPost} />
           <UtterancesComments />
+          {preview && (
+            <ExitPreviewButton />
+          )}
         </footer>
       </main>
     </>
@@ -97,16 +103,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({ params, preview = false, previewData }) => {
 
   const { slug } = params;
 
-  const post = await getPost(String(slug));
+  const post = await getPost(String(slug), previewData);
 
   return {
     props: {
-      post
-
+      post,
+      preview
     },
     revalidate: 60 * 60 * 12, //12 horas
   }

@@ -3,21 +3,18 @@ import { DefaultClient } from '@prismicio/client/types/client';
 import { getStaticPaths } from '../pages/post/[slug]';
 
 export function getPrismicClient(req?: unknown): DefaultClient {
-  const prismic = Prismic.client(
-    process.env.PRISMIC_API_ENDPOINT, 
-    {
-      req,
-      accessToken: process.env.PRISMIC_ACCESS_TOKEN
-    }
-  );
+  const prismic = Prismic.client(process.env.PRISMIC_API_ENDPOINT, {
+    req,
+    accessToken: process.env.PRISMIC_ACCESS_TOKEN,
+  });
 
   return prismic;
 }
 
 
-export async function getPost(slug: string) {
+export async function getPost(slug: string, previewData) {
   const prismic = getPrismicClient();
-  const response = await prismic.getByUID('post', slug, {});
+  const response = await prismic.getByUID('post', slug, {ref: previewData?.ref ?? null});
   // console.log(JSON.stringify(response.data.content, null, 2));
 
   const content = response.data.content.map(c => {
