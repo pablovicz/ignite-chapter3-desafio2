@@ -1,0 +1,41 @@
+.navBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    div {
+        width: 30%;
+
+        display: flex;
+        flex-direction: column;
+
+        transition: filter 0.2s;
+        cursor: pointer;
+
+        span {
+            font-size: 1.125rem;
+            line-height: 1.375rem;
+            margin-bottom: 0.5rem;
+
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        a {
+            font-weight: 500;
+            font-size: 1rem;
+            line-height: 1.375rem;
+
+            color: var(--pink-500);
+        }
+    }
+
+    div + div {
+        text-align: right;
+    }
+
+    div:hover {
+        filter: brightness(0.8);
+    }
+}
