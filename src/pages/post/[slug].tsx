@@ -1,20 +1,21 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Head from 'next/head';
 import { RichText } from 'prismic-dom';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { getPaths, getPost } from '../../services/prismic';
+import UtterancesComments from '../../components/UtterancesComments';
+import { Navbar } from '../../components/Navbar';
 import { PostInfo } from '../../components/PostInfo';
 import { DateFormatter } from '../../utils/dateFormatter';
 import { TextToReadingDuration } from '../../utils/wordsCounter';
 
 import styles from './post.module.scss';
-import { useRouter } from 'next/router';
-import { Navbar } from '../../components/Navbar';
-import UtterancesComments from '../../components/UtterancesCommnets';
+
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     banner: {
@@ -63,6 +64,7 @@ export default function Post({ post }: PostProps) {
           <h1>{post.data.title}</h1>
           <PostInfo
             publication_date={DateFormatter(post.first_publication_date)}
+            last_updated_date={DateFormatter(post.last_publication_date, true)}
             author={post.data.author}
             duration={TextToReadingDuration(post.data.content)}
           />
